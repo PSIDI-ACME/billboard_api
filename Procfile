@@ -1,1 +1,1 @@
-web: psidi-billboard
+web: billboard_api
