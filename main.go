@@ -31,6 +31,6 @@ func main() {
 
 	//port := "8080"
 	log.Println(port)
-	//log.Fatal(http.ListenAndServe(":"+port, router))
-	log.Fatal(http.ListenAndServe(":8081", router))
+	log.Fatal(http.ListenAndServe(":"+port, router))
+	//log.Fatal(http.ListenAndServe(":8081", router))
 }
