@@ -1,1 +1,1 @@
-web: psidi_billboard
+web: psidi-billboard
