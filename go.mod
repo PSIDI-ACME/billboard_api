@@ -1,4 +1,4 @@
-module github.com/PSIDI-ACME/customer_ms
+module github.com/PSIDI-ACME/billboard_api
 
 go 1.13
 

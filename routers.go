@@ -14,7 +14,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/nvellon/hal"
@@ -115,26 +114,4 @@ var routes = Routes{
 		"/v1/api",
 		Index,
 	},
-
-	Route{
-		"GetCustomer",
-		strings.ToUpper("Get"),
-		"/v1/customers/{customerId}",
-		Index,
-	},
-
-	Route{
-		"RegisterCustomer",
-		strings.ToUpper("Post"),
-		"/v1/customers",
-		Index,
-	},
-	/*
-		Route{
-			"UpdateCustomer",
-			strings.ToUpper("Patch"),
-			"/v1/customers/{customerId}",
-			UpdateCustomer,
-		},
-	*/
 }
