@@ -99,12 +99,49 @@ func Index(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		root.Embed("customers", customers)
+		//Reviews
+		reviewsUrl := "https://reviews-psidi.herokuapp.com"
+		resp, err := http.Get(reviewsUrl + "/reviews/routes/api")
+		if err != nil {
+			log.Println(err)
+		}
 
+		defer resp.Body.Close()
+
+		type Links struct {
+			S string `json:"href"`
+		}
+
+		type Hyper struct {
+			Links map[string]Links `json:"_links"`
+		}
+
+		if resp.StatusCode == http.StatusOK {
+			bodyBytes, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				log.Println(err)
+			}
+
+			hyper := &Hyper{}
+			json.Unmarshal(bodyBytes, &hyper)
+
+			reviews := hal.NewResource(Root{}, reviewsUrl)
+
+			for key, value := range hyper.Links {
+				if key != "self" {
+					reviews.AddNewLink(hal.Relation(key), reviewsUrl+value.S)
+				}
+			}
+
+			root.Embed("customers", customers)
+			root.Embed("reviews", reviews)
+
+		}
+
+		hypermedia, _ := json.MarshalIndent(root, "", "  ")
+		w.Write([]byte(hypermedia))
 	}
 
-	hypermedia, _ := json.MarshalIndent(root, "", "  ")
-	w.Write([]byte(hypermedia))
 }
 
 var routes = Routes{
