@@ -133,13 +133,49 @@ func Index(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
-			root.Embed("customers", customers)
-			root.Embed("reviews", reviews)
+			//Catalog
+			catalogUrl := "http://catalog-psidi.herokuapp.com"
+			resp, err := http.Get(catalogUrl + "/products/routes")
+			if err != nil {
+				log.Println(err)
+			}
 
+			defer resp.Body.Close()
+
+			type Links struct {
+				S string `json:"href"`
+			}
+
+			type Hyper struct {
+				Links map[string]Links `json:"_links"`
+			}
+
+			if resp.StatusCode == http.StatusOK {
+				bodyBytes, err := ioutil.ReadAll(resp.Body)
+				if err != nil {
+					log.Println(err)
+				}
+
+				hyper := &Hyper{}
+				json.Unmarshal(bodyBytes, &hyper)
+
+				products := hal.NewResource(Root{}, catalogUrl)
+
+				for key, value := range hyper.Links {
+					if key != "self" {
+						products.AddNewLink(hal.Relation(key), catalogUrl+value.S)
+					}
+				}
+				root.Embed("customers", customers)
+				root.Embed("products", products)
+				root.Embed("reviews", reviews)
+
+			}
+
+			hypermedia, _ := json.MarshalIndent(root, "", "  ")
+			w.Write([]byte(hypermedia))
 		}
 
-		hypermedia, _ := json.MarshalIndent(root, "", "  ")
-		w.Write([]byte(hypermedia))
 	}
 
 }
